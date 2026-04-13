@@ -1,0 +1,4 @@
+# Ignorar el archivo de llaves de Firebase para que no se suba a internet
+*.json
+__pycache__/
+.venv/

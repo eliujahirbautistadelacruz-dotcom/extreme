@@ -1,0 +1,91 @@
+:root {
+    --rojo: #ff0000;
+    --azul: #0055ff;
+    --fondo: #0a0a0a;
+    --tarjeta: #151515;
+}
+
+body {
+    background-color: var(--fondo);
+    color: white;
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+h1 { 
+    color: var(--rojo); 
+    text-transform: uppercase; 
+    letter-spacing: 5px; 
+    margin-top: 50px;
+    text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+}
+
+nav {
+    background: var(--tarjeta);
+    padding: 20px;
+    border-bottom: 3px solid var(--azul);
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    margin: 0 15px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+nav a:hover { color: var(--rojo); }
+
+.container {
+    max-width: 600px;
+    margin: 40px auto;
+    background: var(--tarjeta);
+    padding: 30px;
+    border-radius: 15px;
+    border-top: 5px solid var(--rojo);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+input, select {
+    width: 100%;
+    padding: 15px;
+    margin: 10px 0;
+    background: #222;
+    border: 1px solid var(--azul);
+    color: white;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+button {
+    width: 100%;
+    padding: 15px;
+    background: var(--rojo);
+    color: white;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: 0.3s;
+    text-transform: uppercase;
+}
+
+button:hover {
+    background: var(--azul);
+    transform: scale(1.02);
+}
+
+table {
+    width: 90%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    background: var(--tarjeta);
+}
+
+th { background: var(--azul); padding: 12px; }
+td { padding: 12px; border-bottom: 1px solid #333; }
+
+.vencido { color: var(--rojo); font-weight: bold; }
+.al-dia { color: #00ff88; font-weight: bold; }

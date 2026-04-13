@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Extreme - Registro</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body style="background:#111; color:white; text-align:center;">
+    <nav><a href="lista_alumnos.html" style="color:red; font-weight:bold;">⬅ VOLVER AL PANEL</a></nav>
+    <h1>REGISTRAR alumnos</h1>
+    <div style="padding:20px; max-width:400px; margin:auto; background:#222; border-radius:15px; border:1px solid red;">
+        <input type="text" id="nombre" placeholder="Nombre del Alumno" style="width:90%; padding:10px; margin:10px 0;">
+        <input type="text" id="telefono" placeholder="WhatsApp (escribir 521 antes del 833)" style="width:90%; padding:10px; margin:10px 0;">
+        
+        <input type="text" id="telegramID" placeholder="ID de Telegram (Ej: 12345678)" style="width:90%; padding:10px; margin:10px 0;">
+        
+        <select id="tiempo" style="width:95%; padding:10px; margin:10px 0;">
+            <option value="30">Mes (30 días)</option>
+            <option value="14">Quincena (14 días)</option>
+            <option value="test">Prueba (5 min)</option>
+        </select>
+        <button id="btnGuardar" style="background:red; color:white; border:none; padding:15px; width:100%; cursor:pointer; font-weight:bold;">GUARDAR EN FIREBASE</button>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCfdMxnDiNliSsM_zmMJWfg7xAPCpw8xNg",
+            authDomain: "pagos-extreme.firebaseapp.com",
+            projectId: "pagos-extreme",
+            databaseURL: "https://pagos-extreme-default-rtdb.firebaseio.com/",
+            storageBucket: "pagos-extreme.firebasestorage.app",
+            messagingSenderId: "387072517216",
+            appId: "1:387072517216:web:f1111ff501a7c9e7c10f05"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        document.getElementById('btnGuardar').onclick = () => {
+            const n = document.getElementById('nombre').value;
+            const t = document.getElementById('telefono').value;
+            const tid = document.getElementById('telegramID').value; // Captura el ID de Telegram
+            const tiempo = document.getElementById('tiempo').value;
+            
+            // Verificamos que al menos tenga nombre e ID de Telegram para el bot
+            if(!n || !tid) return alert("Por favor, llena el nombre y el ID de Telegram");
+
+            let fv = new Date();
+            if(tiempo === "30") fv.setDate(fv.getDate() + 30);
+            else if(tiempo === "14") fv.setDate(fv.getDate() + 14);
+            else fv.setMinutes(fv.getMinutes() + 5);
+
+            const nuevoAlumnoRef = push(ref(db, 'alumnos'));
+            set(nuevoAlumnoRef, {
+                nombre: n,
+                telefono: t,
+                telegramID: tid, // Se guarda en Firebase para que el bot de Python lo lea
+                vencimiento: fv.toISOString()
+            }).then(() => {
+                alert("Guerrero registrado!");
+                location.href = "lista_alumnos.html";
+            });
+        };
+    </script>
+</body>
+</html>
