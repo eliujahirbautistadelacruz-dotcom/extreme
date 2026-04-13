@@ -2,223 +2,74 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Extreme - Panel</title>
+    <title>Extreme - Panel de Control</title>
     <link rel="stylesheet" href="../css/style.css">
     <style>
-        /* Estética Premium */
-        body { background: #111; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .reloj-container { font-size: 1.2rem; color: #00a2ff; margin-bottom: 10px; font-weight: bold; text-align: center; font-family: monospace; }
-        
-        /* Contenedor principal estilizado */
-        .glass-panel { background: #1a1a1a; border: 1px solid #333; border-radius: 15px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-
-        /* Botones estilizados */
-        .btn-action { border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; transition: 0.3s; margin: 2px; color: white; }
-        .btn-ws { background: #25D366; }
-        .btn-tg { background: #0088cc; }
-        .btn-renovar { background: #ffaa00; color: black; }
-        .btn-borrar { background: #333; color: #888; }
-        .btn-borrar:hover { background: #ff3333; color: white; }
-
-        /* Estadísticas limpias */
-        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-        .stat-card { background: #222; padding: 15px; border-radius: 10px; text-align: center; border-bottom: 3px solid #444; }
-        .stat-card.active { border-color: #00ff88; }
-        .stat-card.expired { border-color: #ff3333; }
-        .stat-val { font-size: 1.8rem; display: block; font-weight: bold; }
-
-        /* Buscador y Filtros */
-        .controls { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-        .search-input { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #444; background: #000; color: white; outline: none; }
-        .search-input:focus { border-color: red; }
-        .btn-filter { background: #333; border: 1px solid #444; color: white; padding: 10px 15px; border-radius: 8px; cursor: pointer; }
-        .btn-filter.active { background: red; border-color: red; }
-
-        /* Tabla Estilo Moderno */
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th { background: #0055ff; color: white; padding: 12px; font-size: 13px; text-transform: uppercase; }
-        td { padding: 15px; border-bottom: 1px solid #222; }
-        tr:hover { background: #222; }
-
-        .vencido { color: #ff3333; font-weight: bold; }
-        .al-dia { color: #00ff88; font-weight: bold; }
-        
-        .badge-new { background: red; font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-left: 5px; animation: blinker 1.5s linear infinite; }
-        @keyframes blinker { 50% { opacity: 0; } }
-
-        /* Modal */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); }
-        .modal-content { background: #1a1a1a; margin: 10% auto; padding: 30px; border: 1px solid red; width: 300px; border-radius: 20px; text-align: center; }
-        .modal-content button { display: block; width: 100%; margin: 10px 0; padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; }
+        body { background: #000; color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .container { padding: 20px; }
+        .table-bg { background: #111; border: 1px solid #333; border-radius: 8px; padding: 10px; }
+        table { width: 100%; border-collapse: collapse; }
+        th { border-bottom: 2px solid #0055ff; padding: 10px; color: #0055ff; }
+        td { padding: 12px; border-bottom: 1px solid #222; text-align: center; }
+        .btn { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-tg { background: #0088cc; color: white; }
+        .btn-pay { background: #ffaa00; color: black; margin-left: 5px; }
     </style>
 </head>
 <body>
-
-    <nav style="display: flex; justify-content: space-between; padding: 15px; align-items: center; border-bottom: 1px solid #333;">
-        <div style="display: flex; gap: 15px;">
-            <a href="../index.html" style="color:#888; text-decoration: none; font-weight: bold;">INICIO</a>
-            <a href="dashboard.html" style="color:red; text-decoration: none; font-weight: bold;">+ REGISTRAR</a>
-        </div>
-        <button onclick="avisoMasivo()" style="background:none; border: 1px solid #444; color:white; padding: 8px 15px; border-radius: 8px; cursor:pointer;">📢 AVISO GLOBAL</button>
-    </nav>
-
-    <div class="container" style="max-width: 1000px; margin: auto; padding: 20px;">
-        <div id="relojActual" class="reloj-container"></div>
-
-        <div class="stats-grid">
-            <div class="stat-card">Total <span id="totalA" class="stat-val">0</span></div>
-            <div class="stat-card active">Activos <span id="totalAct" class="stat-val">0</span></div>
-            <div class="stat-card expired">Vencidos <span id="totalVen" class="stat-val">0</span></div>
-        </div>
-
-        <div class="glass-panel">
-            <div class="controls">
-                <input type="text" id="buscador" class="search-input" placeholder="Buscar por nombre...">
-                <button class="btn-filter active" id="f-todos" onclick="setFiltro('todos')">Todos</button>
-                <button class="btn-filter" id="f-ven" onclick="setFiltro('vencidos')">Vencidos</button>
-                <button class="btn-filter" id="f-hoy" onclick="setFiltro('proximos')">Vencen Hoy</button>
-            </div>
-
+    <div class="container">
+        <h1 style="text-align: center;">EXTREME GYM - PAGOS</h1>
+        <div class="table-bg">
             <table>
                 <thead>
                     <tr>
                         <th>ALUMNO</th>
-                        <th>TIEMPO</th>
-                        <th>GESTIÓN</th>
+                        <th>ESTADO DE PAGO</th>
+                        <th>ACCIONES</th>
                     </tr>
                 </thead>
-                <tbody id="tablaAlumnos"></tbody>
+                <tbody id="lista"></tbody>
             </table>
-        </div>
-    </div>
-
-    <audio id="audioAlert" src="https://www.soundjay.com/buttons/beep-01a.mp3"></audio>
-
-    <div id="modalRenovar" class="modal">
-        <div class="modal-content">
-            <h2 style="color:#ffaa00; margin-top:0;">RENOVAR</h2>
-            <p id="nombreRenovar" style="font-weight:bold;"></p>
-            <button style="background:#00ff88" onclick="confirmarRenovacion('30')">MES (30 DÍAS)</button>
-            <button style="background:#00a2ff" onclick="confirmarRenovacion('14')">QUINCENA (14 DÍAS)</button>
-            <button style="background:#ff3333; color:white" onclick="confirmarRenovacion('5')">PRUEBA (5 MIN)</button>
-            <button onclick="cerrarModal()" style="background:#333; color:white;">CANCELAR</button>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        const firebaseConfig = {
+        const config = {
             apiKey: "AIzaSyCfdMxnDiNliSsM_zmMJWfg7xAPCpw8xNg",
             authDomain: "pagos-extreme.firebaseapp.com",
             projectId: "pagos-extreme",
-            databaseURL: "https://pagos-extreme-default-rtdb.firebaseio.com/",
-            storageBucket: "pagos-extreme.firebasestorage.app",
-            messagingSenderId: "387072517216",
-            appId: "1:387072517216:web:f1111ff501a7c9e7c10f05"
+            databaseURL: "https://pagos-extreme-default-rtdb.firebaseio.com/"
         };
 
-        const app = initializeApp(firebaseConfig);
+        const app = initializeApp(config);
         const db = getDatabase(app);
 
-        const tbody = document.getElementById('tablaAlumnos');
-        const buscador = document.getElementById('buscador');
-        let alumnosData = {};
-        let filtroActual = 'todos';
-
-        // Lógica de filtrado visual
-        window.setFiltro = (f) => {
-            filtroActual = f;
-            document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active'));
-            document.getElementById(`f-${f === 'todos' ? 'todos' : f === 'vencidos' ? 'ven' : 'hoy'}`).classList.add('active');
-            refrescar();
-        };
-
-        function calcular(v) {
-            const d = new Date(v) - new Date();
-            if (d <= 0) return { t: "🛑 VENCIDO", c: "vencido" };
-            const min = Math.floor(d / 60000);
-            const hrs = Math.floor(min / 60);
-            const dias = Math.floor(hrs / 24);
-            let txt = dias > 0 ? `${dias}d ` : "";
-            txt += `${hrs % 24}h ${min % 60}m`;
-            return { t: txt, c: "al-dia" };
-        }
-
-        function refrescar() {
-            if (!tbody) return;
-            const query = buscador.value.toLowerCase();
-            tbody.innerHTML = "";
-            let t = 0, a = 0, v = 0;
-
-            for (const id in alumnosData) {
-                const u = alumnosData[id];
-                const res = calcular(u.vencimiento);
-                const vencido = res.c === "vencido";
-                const diff = new Date(u.vencimiento) - new Date();
-
-                t++;
-                vencido ? v++ : a++;
-
-                // Aplicar filtros
-                if (filtroActual === 'vencidos' && !vencido) continue;
-                if (filtroActual === 'proximos' && (vencido || diff > 86400000)) continue;
-                if (!u.nombre.toLowerCase().includes(query)) continue;
-
-                tbody.innerHTML += `
+        onValue(ref(db, 'alumnos'), (snapshot) => {
+            const data = snapshot.val();
+            const list = document.getElementById('lista');
+            list.innerHTML = "";
+            for (let id in data) {
+                const u = data[id];
+                list.innerHTML += `
                     <tr>
+                        <td>${u.nombre}</td>
+                        <td>${u.vencimiento || 'Pendiente'}</td>
                         <td>
-                            <strong>${u.nombre}</strong><br>
-                            <span style="font-size:11px; color:#666;">ID: ${u.telegramID || '---'}</span>
+                            <button class="btn btn-tg" onclick="window.open('https://t.me/${u.telegramID}')">AVISAR TG</button>
+                            <button class="btn btn-pay" onclick="renovar('${id}', 30)">+30 DÍAS</button>
+                            <button class="btn btn-pay" onclick="renovar('${id}', 15)">+15 DÍAS</button>
                         </td>
-                        <td class="${res.c}" style="font-family:monospace;">${res.t}</td>
-                        <td style="text-align:right">
-                            <button class="btn-action btn-ws" onclick="irAWhatsApp('${u.telefono}', '${u.nombre}')">WS</button>
-                            <button class="btn-action btn-tg" onclick="irATelegram('${u.telegramID}')">TG</button>
-                            <button class="btn-action btn-renovar" onclick="abrirModal('${id}', '${u.nombre}')">RENOVAR</button>
-                            <button class="btn-action btn-borrar" onclick="eliminarGuerrero('${id}')">X</button>
-                        </td>
-                    </tr>
-                `;
+                    </tr>`;
             }
-            document.getElementById('totalA').innerText = t;
-            document.getElementById('totalAct').innerText = a;
-            document.getElementById('totalVen').innerText = v;
-        }
-
-        // Firebase Sync
-        onValue(ref(db, 'alumnos'), (s) => { 
-            alumnosData = s.val() || {}; 
-            refrescar();
         });
 
-        // Reloj y actualización
-        setInterval(() => {
-            const n = new Date();
-            document.getElementById('relojActual').innerText = n.toLocaleString().toUpperCase();
-            refrescar(); // Actualiza los minutos en tiempo real
-        }, 10000);
-
-        buscador.oninput = refrescar;
-
-        // Globales
-        let idSel = "";
-        window.abrirModal = (id, n) => { idSel = id; document.getElementById('nombreRenovar').innerText = n; document.getElementById('modalRenovar').style.display='block'; };
-        window.cerrarModal = () => document.getElementById('modalRenovar').style.display='none';
-        window.confirmarRenovacion = (t) => {
-            let nf = new Date();
-            if(t==='30') nf.setDate(nf.getDate()+30);
-            else if(t==='14') nf.setDate(nf.getDate()+14);
-            else nf.setMinutes(nf.getMinutes()+5);
-            update(ref(db, `alumnos/${idSel}`), {vencimiento: nf.toISOString()}).then(cerrarModal);
-        };
-        window.eliminarGuerrero = (id) => { if(confirm("¿Borrar?")) remove(ref(db, `alumnos/${id}`)); };
-        window.irAWhatsApp = (t, n) => { window.open(`https://wa.me/${t}?text=Hola%20${n},%20tu%20tiempo%20en%20Extreme%20Gym%20esta%20por%20terminar.%20💪`, '_blank'); };
-        window.irATelegram = (id) => window.open(`https://t.me/extreme_alertasbot`, '_blank');
-        window.avisoMasivo = () => {
-            const m = prompt("Mensaje masivo:");
-            if(m) window.open(`https://wa.me/?text=${encodeURIComponent(m)}`, '_blank');
+        window.renovar = (id, dias) => {
+            let fecha = new Date();
+            fecha.setDate(fecha.getDate() + dias);
+            update(ref(db, 'alumnos/' + id), { vencimiento: fecha.toISOString().split('T')[0] });
         };
     </script>
 </body>
